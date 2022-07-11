@@ -1,16 +1,17 @@
 import numpy as np
 import pyabf
 import matplotlib.pyplot as plt
+from openpyxl import load_workbook
 
 
-def c1_Vm(sweep_Y_data, c1):
+def c1_vm(sweep_y_data, c1):
     """Returns the Vm at the cursor 1 position.
 
     Keyword arguments:
-    sweep_Y_data -- sweep Vm values
+    sweep_y_data -- sweep Vm values
     c1 -- cursor 1 position in ms
     """
-    return sweep_Y_data[c1]
+    return sweep_y_data[c1]
 
 
 def sweep_command(abf_data):
@@ -26,40 +27,40 @@ def sweep_command(abf_data):
     return [current_injection * x / 1000 for x in multiplier]  # /1000 to get nA
 
 
-def c1c2_min(sweep_Y_data, c1, c2):
+def c1c2_min(sweep_y_data, c1, c2):
     """Returns the lowest point between cursor 1 and 2.
 
     Keyword arguments:
-    sweep_Y_data -- sweep Vm values
+    sweep_y_data -- sweep Vm values
     c1 -- cursor 1 position in ms
     c2 -- cursor 2 position in ms
     """
-    return min(sweep_Y_data[c1:c2])
+    return min(sweep_y_data[c1:c2])
 
 
-def c3c4_min(sweep_Y_data, c3, c4):
+def c3c4_min(sweep_y_data, c3, c4):
     """Returns the lowest point between cursor 3 and 4.
 
     Keyword arguments:
-    sweep_Y_data -- sweep Vm values
+    sweep_y_data -- sweep Vm values
     c3 -- cursor 3 position in ms
     c4 -- cursor 4 position in ms
     """
-    return min(sweep_Y_data[c3:c4])
+    return min(sweep_y_data[c3:c4])
 
 
-def peaks(sweep_X_data, sweep_Y_data, threshold):
+def peaks(sweep_y_data, threshold):
     """Returns peak indices for each sweep.
 
     Keyword arguments:
-    sweep_X_data -- sweep time values
-    sweep_Y_data -- sweep Vm values
+    sweep_x_data -- sweep time values
+    sweep_y_data -- sweep Vm values
     threshold -- minimum detection threshold (in mV)
     """
 
-    # Array of all sweep_Y_data[i+1] - sweep_Y_data[i]
-    dvdt = np.diff(sweep_Y_data)
-    threshold_filter = np.where(sweep_Y_data > threshold)[0]
+    # Array of all sweep_y_data[i+1] - sweep_y_data[i]
+    dvdt = np.diff(sweep_y_data)
+    threshold_filter = np.where(sweep_y_data > threshold)[0]
     peak_indices = [i
                     for i in threshold_filter
                     if np.all(dvdt[i: i + 3] <= 0)
@@ -95,7 +96,7 @@ def file_ids(day, start, end):
     return [iv_files, cc_files]
 
 
-def iv_plots(iv_files, current_cell, day, data_folder=data_folder):
+def iv_plots(iv_files, current_cell, day, data_folder):
     """Creates the IV plots.
 
     Keyword arguments:
@@ -127,13 +128,11 @@ def iv_plots(iv_files, current_cell, day, data_folder=data_folder):
         "navy",
     ]
 
-    threshold = 10  # deteciton threshold for peaks
-
     for count, iv_file_name in enumerate(iv_files):
         path = data_folder + day + "/" + iv_file_name + ".abf"
         abf = pyabf.ABF(path)  # One IV file
 
-        fig = plt.figure(figsize=(8, 10))
+        # fig = plt.figure(figsize=(8, 10))
         single_colour = colours[count]
 
         plt.title(f"Cell {current_cell} IV ({iv_file_name})")
@@ -164,7 +163,7 @@ def iv_plots(iv_files, current_cell, day, data_folder=data_folder):
     return
 
 
-def cc_plots(cc_files, current_cell, day, data_folder=data_folder):
+def cc_plots(cc_files, current_cell, day, data_folder):
     """Creates the CC plots.
 
     Keyword arguments:
@@ -177,7 +176,7 @@ def cc_plots(cc_files, current_cell, day, data_folder=data_folder):
         path = data_folder + day + "/" + cc_file_name + ".abf"
         abf = pyabf.ABF(path)
 
-        fig = plt.figure(figsize=(15, 10))
+        # fig = plt.figure(figsize=(15, 10))
 
         plt.title(f"Cell {current_cell} CC ({cc_file_name})")
         plt.ylabel(abf.sweepLabelY)
@@ -196,10 +195,10 @@ def cc_plots(cc_files, current_cell, day, data_folder=data_folder):
         # plt.legend()
 
         for i, tagTimeSec in enumerate(abf.tagTimesSec):
-            posX = abf.tagTimesSec[i]
+            pos_x = abf.tagTimesSec[i]
             comment = abf.tagComments[i]
             color = "C{}".format(i + 2)
-            plt.axvline(posX, label=comment, color=color, ls='--')
+            plt.axvline(pos_x, label=comment, color=color, ls='--')
         plt.legend(prop={'size': 25}, loc='upper right')
 
         plt.savefig(data_folder + day + "/" + "CC " + cc_file_name, dpi=300, bbox_inches="tight")
@@ -208,7 +207,7 @@ def cc_plots(cc_files, current_cell, day, data_folder=data_folder):
     return
 
 
-def iv_analysis(iv_files, current_cell, day, data_folder=data_folder):
+def iv_analysis(iv_files, current_cell, day, data_folder, file_id_path):
     """Runs the IV analysis and saves the results to individual Excel sheets.
 
     Keyword arguments:
@@ -217,12 +216,13 @@ def iv_analysis(iv_files, current_cell, day, data_folder=data_folder):
     day -- the day of recording
     data_folder -- path to Raw data folder
     """
+    wb = load_workbook(filename=file_id_path)
 
     cursor_1 = 298  # Cursor position in ms. Values obtained from Excel.
     cursor_2 = 4181
     cursor_3 = 8912
     cursor_4 = 10747
-    threshold = 10  # deteciton threshold for peaks
+    threshold = 10  # detection threshold for peaks
 
     # ws = wb.active
     ws = wb.create_sheet(f"Cell {current_cell}", current_cell)  # Create a sheet for each cell
@@ -235,21 +235,21 @@ def iv_analysis(iv_files, current_cell, day, data_folder=data_folder):
         ih = []
         ss = []
         peak_i = []
-        sweep_firstAP = "No AP"
+        sweep_first_ap = "No AP"
         for i in range(abf.sweepCount):
             abf.setSweep(i)  # One sweep
             if i <= 4:  # sweeps between 1-5
-                rmp.append(c1_Vm(abf.sweepY, cursor_1))
+                rmp.append(c1_vm(abf.sweepY, cursor_1))
                 ih.append(c1c2_min(abf.sweepY, cursor_1, cursor_2))
                 ss.append(c3c4_min(abf.sweepY, cursor_3, cursor_4))
             elif peak_i == []:  # sweeps > 5. Finds the first peaks in the IV recording
-                peak_i = peaks(abf.sweepX, abf.sweepY, threshold)
+                peak_i = peaks(abf.sweepY, threshold)
 
-            if sweep_firstAP == "No AP" and peak_i != []:
-                sweep_firstAP = i + 1
-                print("IV {}.".format(iv_file_name), "Sweep with first AP:", sweep_firstAP)
+            if sweep_first_ap == "No AP" and peak_i != []:
+                sweep_first_ap = i + 1
+                print("IV {}.".format(iv_file_name), "Sweep with first AP:", sweep_first_ap)
 
-        ws.cell(row=29, column=count * 5 + 2, value=sweep_firstAP)  # Sweep with first AP
+        ws.cell(row=29, column=count * 5 + 2, value=sweep_first_ap)  # Sweep with first AP
         ws.cell(row=2, column=count * 5 + 2, value=int(iv_file_name[-2:]))  # IV file numbers
 
         results = [rmp, current_injection, ih, ss]
