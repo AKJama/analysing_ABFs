@@ -6,7 +6,6 @@ from openpyxl import load_workbook
 
 def c1_vm(sweep_y_data, c1):
     """Returns the Vm at the cursor 1 position.
-
     Keyword arguments:
     sweep_y_data -- sweep Vm values
     c1 -- cursor 1 position in ms
@@ -29,7 +28,6 @@ def sweep_command(abf_data):
 
 def c1c2_min(sweep_y_data, c1, c2):
     """Returns the lowest point between cursor 1 and 2.
-
     Keyword arguments:
     sweep_y_data -- sweep Vm values
     c1 -- cursor 1 position in ms
@@ -40,7 +38,6 @@ def c1c2_min(sweep_y_data, c1, c2):
 
 def c3c4_min(sweep_y_data, c3, c4):
     """Returns the lowest point between cursor 3 and 4.
-
     Keyword arguments:
     sweep_y_data -- sweep Vm values
     c3 -- cursor 3 position in ms
@@ -51,7 +48,6 @@ def c3c4_min(sweep_y_data, c3, c4):
 
 def peaks(sweep_y_data, threshold):
     """Returns peak indices for each sweep.
-
     Keyword arguments:
     sweep_x_data -- sweep time values
     sweep_y_data -- sweep Vm values
@@ -71,7 +67,6 @@ def peaks(sweep_y_data, threshold):
 
 def file_ids(day, start, end):
     """Returns the iv and cc file_id information.
-
     Keyword arguments:
     day -- day of recording
     start -- initial iv file
@@ -98,7 +93,6 @@ def file_ids(day, start, end):
 
 def iv_plots(iv_files, current_cell, day, data_folder):
     """Creates the IV plots.
-
     Keyword arguments:
     iv_files -- iv_file codes
     day -- the day of recording
@@ -165,7 +159,6 @@ def iv_plots(iv_files, current_cell, day, data_folder):
 
 def cc_plots(cc_files, current_cell, day, data_folder):
     """Creates the CC plots.
-
     Keyword arguments:
     cc_files -- cc_file codes
     day -- the day of recording
@@ -207,16 +200,15 @@ def cc_plots(cc_files, current_cell, day, data_folder):
     return
 
 
-def iv_analysis(iv_files, current_cell, day, data_folder):
+def iv_analysis(iv_files, current_cell, day, data_folder, file_id_path):
     """Runs the IV analysis and saves the results to individual Excel sheets.
-
     Keyword arguments:
     iv_files -- iv_file codes
     current_cell -- the current cell being analysed
     day -- the day of recording
     data_folder -- path to Raw data folder
     """
-    wb = load_workbook(filename=data_folder + "file_ids.xlsx")
+    wb = load_workbook(filename=file_id_path)
 
     cursor_1 = 298  # Cursor position in ms. Values obtained from Excel.
     cursor_2 = 4181
@@ -263,7 +255,7 @@ def iv_analysis(iv_files, current_cell, day, data_folder):
     ws.cell(row=29, column=1, value="First AP")
 
     wb.save(
-        filename=data_folder + "Results_copy.xlsx"
+        filename="C:/Users/abdij/OneDrive - University of Warwick/Desktop/ATF data/Results_copy.xlsx"
     )
 
     return
