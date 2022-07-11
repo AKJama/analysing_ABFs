@@ -1,3 +1,8 @@
+import numpy as np
+import pyabf
+import matplotlib.pyplot as plt
+
+
 def c1_Vm(sweep_Y_data, c1):
     """Returns the Vm at the cursor 1 position.
 
