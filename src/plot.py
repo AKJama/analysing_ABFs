@@ -2,10 +2,6 @@
 Contains code to plot ABF data using pyABF and matplotlib
 """
 
-import pyabf
-import numpy as np
-import matplotlib as plt
-
 import os
 
 import analysis_functions as af
