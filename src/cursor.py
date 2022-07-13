@@ -14,7 +14,7 @@ class Cursors:
         self.time = time
 
     def get_vm(self):
-        return self.y_data[self.time]
+        print(self.y_data[self.time])
 
 
 # class CursorA(Cursors):
@@ -22,7 +22,7 @@ class Cursors:
 
 class CursorB(Cursors):
     def get_diff_time(self, cursor_a):
-        return self.time - cursor_a.time
+        print(self.time - cursor_a.time)
 
     def get_min(self, cursor_a):
-        return min(self.y_data[cursor_a, self.time])
+        print(min(self.y_data[cursor_a.time: self.time]))
