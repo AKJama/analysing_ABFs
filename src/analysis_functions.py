@@ -132,7 +132,7 @@ def iv_plots(iv_files, current_cell, day, data_folder):
         path = data_folder + day + "/" + iv_file_name + ".abf"
         abf = pyabf.ABF(path)  # One IV file
 
-        # fig = plt.figure(figsize=(8, 10))
+        plt.figure(figsize=(8, 10))
         single_colour = colours[count]
 
         plt.title(f"Cell {current_cell} IV ({iv_file_name})")
@@ -158,7 +158,7 @@ def iv_plots(iv_files, current_cell, day, data_folder):
         plt.savefig(
             data_folder + day + "/" + "IV " + iv_file_name, dpi=300, bbox_inches="tight"
         )
-        plt.show()
+        # plt.show()
 
     return
 
@@ -176,7 +176,7 @@ def cc_plots(cc_files, current_cell, day, data_folder):
         path = data_folder + day + "/" + cc_file_name + ".abf"
         abf = pyabf.ABF(path)
 
-        # fig = plt.figure(figsize=(15, 10))
+        plt.figure(figsize=(15, 10))
 
         plt.title(f"Cell {current_cell} CC ({cc_file_name})")
         plt.ylabel(abf.sweepLabelY)
@@ -202,7 +202,7 @@ def cc_plots(cc_files, current_cell, day, data_folder):
         plt.legend(prop={'size': 25}, loc='upper right')
 
         plt.savefig(data_folder + day + "/" + "CC " + cc_file_name, dpi=300, bbox_inches="tight")
-        plt.show()
+        # plt.show()
 
     return
 
